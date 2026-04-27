@@ -78,3 +78,46 @@ def get_first_youtube_video_id(query: str) -> str | None:
         return None
     except Exception:
         return None
+
+
+#  WIKIPEDIA — быстрый ответ
+def get_wiki_summary(query: str) -> str:
+    """Возвращает краткое описание из Wikipedia на русском."""
+    try:
+        headers = {
+            "User-Agent": "CactusAssistant/0.0.2 (educational project; Python/requests)"
+        }
+        url = "https://ru.wikipedia.org/w/api.php"
+
+        # Шаг 1 — ищем статью
+        search_resp = requests.get(url, headers=headers, timeout=5, params={
+            "action": "query",
+            "list": "search",
+            "srsearch": query,
+            "format": "json",
+            "srlimit": 1,
+        })
+        results = search_resp.json().get("query", {}).get("search", [])
+
+        if not results:
+            return ""
+
+        # Шаг 2 — берём первые 3 предложения
+        page_title = results[0]["title"]
+        summary_resp = requests.get(url, headers=headers, timeout=5, params={
+            "action": "query",
+            "prop": "extracts",
+            "exintro": True,
+            "explaintext": True,
+            "titles": page_title,
+            "format": "json",
+            "exsentences": 3,
+        })
+        pages = summary_resp.json().get("query", {}).get("pages", {})
+        extract = next(iter(pages.values())).get("extract", "").strip()
+
+        return f"{page_title}. {extract}" if extract else ""
+
+    except Exception as e:
+        print(f"[!] Ошибка Wikipedia: {e}")
+        return ""
