@@ -14,7 +14,7 @@ import subprocess
 import platform
 
 from speech import speak
-from utils import get_weather, open_url, web_search, get_first_youtube_video_id
+from utils import get_weather, open_url, web_search, get_first_youtube_video_id, get_wiki_summary
 from ai import ask_gpt
 
 # Определяем ОС один раз при старте
@@ -271,7 +271,7 @@ def _cmd_ask_ai(command: str) -> None:
     Передаёт вопрос в GPT.
     Срабатывает на: "спроси", "ответь", "объясни", "расскажи", "что такое", "как работает"
     """
-    for kw in ["спроси", "ответь", "объясни", "расскажи", "что такое", "как работает", "как называется"]:
+    for kw in ["спроси", "ответь", "объясни", "что такое", "как работает", "как называется"]:
         if kw in command:
             question = _extract(command, kw)
             break
@@ -285,6 +285,30 @@ def _cmd_ask_ai(command: str) -> None:
     speak("Думаю...")
     answer = ask_gpt(question)
     speak(answer)
+
+
+# Wikipedia — быстрый ответ
+
+def _cmd_wiki(command: str) -> None:
+    """Ищет объяснение в Wikipedia и озвучивает первые 3 предложения."""
+    for kw in ["что такое", "кто такой", "кто такая", "расскажи про", "расскажи о"]:
+        if kw in command:
+            query = _extract(command, kw)
+            break
+    else:
+        query = command
+
+    if not query:
+        speak("Что именно объяснить?")
+        return
+
+    speak(f"Ищу информацию о {query}.")
+    result = get_wiki_summary(query)
+
+    if result:
+        speak(result)
+    else:
+        speak(f"Не нашёл информацию о {query} в Википедии.")
 
 
 # Пасхалки / шутки
@@ -378,12 +402,17 @@ COMMAND_ROUTER: dict[str, callable] = {
 
     # ИИ — вопросы
     "объясни":              _cmd_ask_ai,
-    "расскажи":             _cmd_ask_ai,
-    "что такое":            _cmd_ask_ai,
     "как работает":         _cmd_ask_ai,
     "как называется":       _cmd_ask_ai,
     "ответь":               _cmd_ask_ai,
     "спроси":               _cmd_ask_ai,
+
+    # Wikipedia
+    "что такое":            _cmd_wiki,
+    "кто такой":            _cmd_wiki,
+    "кто такая":            _cmd_wiki,
+    "расскажи про":         _cmd_wiki,
+    "расскажи о":           _cmd_wiki,
 
     # Пасхалки
     "взлом":                _cmd_hack,
