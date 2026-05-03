@@ -17,7 +17,7 @@
 - **ИИ (GPT)** — если команда не распознана, Кактус спрашивает ChatGPT и озвучивает ответ, и можно задать любые другие вопросы (Нужно подключить отдельный ключ от OpenAI)
 - **Исправлен поиск** — теперь корректно реагирует на запросы поиска в интернете
 - **Новые команды** — скриншот, управление громкостью, выключение/перезагрузка, терминал, камера и др.
-- **Кроссплатформенность** — macOS и Windows (определяет ОС автоматически)
+- **Кроссплатформенность** — macOS и Windows (определяет ОС автоматически) - **Фикс версия CACTUS есть в репозитории нашей организации**
 - **Чистая архитектура** — конфиг вынесен в `config.py`, код разбит по зонам ответственности
 
 ---
@@ -26,7 +26,6 @@
 
 ```bash
 git clone https://github.com/muhammad-mirzoev/cactus-0.0.2.git
-cd ai-cactus
 pip install -r requirements.txt
 ```
 
@@ -43,6 +42,7 @@ OPENAI_API_KEY  = "..."   # platform.openai.com → нужен аккаунт
 
 ```bash
 python main.py
+cd ai-cactus
 ```
 
 ---
@@ -141,13 +141,16 @@ python main.py
 ### Структура проекта
 
 ```
-cactus/
-├── main.py        # Точка входа, главный цикл
-├── commands.py    # Роутер команд и обработчики
-├── speech.py      # Распознавание и синтез речи
-├── utils.py       # Погода, браузер, YouTube
-├── ai.py          # Интеграция с GPT
-├── config.py      # Все настройки
+cactus-0.0.2/
+├── ai-cactus
+|        ├── main.py        # Точка входа, главный цикл
+|        ├── commands.py    # Роутер команд и обработчики
+|        ├── speech.py      # Распознавание и синтез речи
+|        ├── utils.py       # Погода, браузер, YouTube
+|        ├── ai.py          # Интеграция с GPT
+|        └── config.py      # Все настройки
+├── README.md
+├── requirements.txt
 └── requirements.txt
 ```
 
@@ -161,9 +164,14 @@ pip install -r requirements.txt
 ```
 Самое важные зависимости:
 ```
-pyttsx3
-SpeechRecognition
-PyAudio
-requests
-openai
+openai==2.32.0
+PyAudio==0.2.14
+pydantic==2.13.3
+pydantic_core==2.46.3
+pyobjc==12.1
+pyobjc-core==12.1
+pyttsx3==2.99
+requests==2.33.1
+SpeechRecognition==3.16.1
+urllib3==2.6.3
 ```
